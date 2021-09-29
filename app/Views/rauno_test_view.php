@@ -180,7 +180,7 @@
 
 
                                 }).fail(function(e) {
-                                    alert("error" + e);
+                                    alert("error" + JSON.stringify(e));
                                 });
                         }
                     }
