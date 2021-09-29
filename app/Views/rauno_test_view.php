@@ -47,6 +47,8 @@
                                     <td>
                                         <a <?php echo "data-id='" . $row['id'] . "' " . "data-name='" . $row['name'] . "' " . "data-unit='" . $row['unit'] . "' " ?> class="btn edit-data">
                                             <span class="text-primary"><i class="fas fa-pencil-alt"></i></span> </a>
+                                        <a <?php echo "data-id='" . $row['id'] . "' " ?> class="btn delete-data">
+                                            <span class="text-danger"><i class="fas fa-trash"></i></span> </a>
                                     </td>
                                 </tr>
 
@@ -77,6 +79,7 @@
 
     <script>
         $(document).ready(function() {
+
             $(".btn.edit-data").click(function(data) {
                 //get row id, name, and unit
                 var id = $(this).attr("data-id");
@@ -140,6 +143,49 @@
 
             });
 
+            $(".btn.delete-data").click(function(data) {
+                //get row id
+                var id = $(this).attr("data-id");
+                var confirm = bootbox.confirm({
+                    title: 'Delete row?',
+                    message: '<p> Are you sure, you want to delete the row?</p>',
+                    buttons: {
+                        confirm: {
+                            label: "confirm",
+                            className: 'btn-danger',
+                        },
+                        cancel: {
+                            label: "cancel",
+                            className: 'btn-secondary',
+                        }
+
+                    },
+                    callback: function(result) {
+                        if (result) {
+                            //ajax call -controller to delete row 
+                            $.ajax({
+                                    method: "DELETE",
+                                    url: "<?php echo base_url() . "/RaunoTest/delete/" ?>" + id,
+
+                                })
+                                .done(function(res) {
+                                    var data = JSON.parse(res);
+                                    if (data.error == false) {
+                                        console.log("Data deleted: " + data.message);
+                                        //delete the row view
+                                        $("#" + id).hide();
+                                    } else {
+                                        console.log(data.message);
+                                    }
+
+
+                                }).fail(function(e) {
+                                    alert("error" + e);
+                                });
+                        }
+                    }
+                });
+            });
             $('#csv_table').DataTable();
         });
     </script>

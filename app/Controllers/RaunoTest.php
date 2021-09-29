@@ -44,6 +44,24 @@ class RaunoTest extends BaseController
         echo json_encode($response);
     }
 
+    /**
+     * delete row data with the given id
+     */
+    public function delete($id)
+    {
+        $row = $this->getSingleRow($id);
+        if ($row != null) {
+            $status = $this->deleteSingleRow($id);
+            if ($status) {
+                $response = array('error' => false, "message" => 'row deleted!',);
+            } else {
+                $response = array('error' => true, "message" => 'error on deleting!');
+            }
+        } else {
+            $response = array('error' => true, "message" => 'row not found, error deleting!');
+        }
+        echo json_encode($response);
+    }
 
     /**
      * reads csv data
@@ -134,5 +152,27 @@ class RaunoTest extends BaseController
         }
 
         return $rowToReturn;
+    }
+
+    /**
+     * deletes a single row 
+     * @param $id - id of the row to be deleted
+     * @return bool
+     */
+    protected function deleteSingleRow($id)
+    {
+        $status = false;
+        $dataRows = $this->readAllData();
+        foreach ($dataRows as $index => $row) {
+            if ($id == $row['id']) {
+                unset($dataRows[$index]);
+                if ($this->updateAllData($dataRows)) {
+                    $status = true;
+                    break;
+                }
+            }
+        }
+
+        return $status;
     }
 }
