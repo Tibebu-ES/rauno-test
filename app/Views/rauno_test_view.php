@@ -37,11 +37,12 @@
                         <?php if ($rows) : ?>
                             <?php foreach ($rows as $row) : ?>
 
-                                <tr>
+                                <tr <?php echo "id='" . $row['id'] . "'" ?>>
                                     <td><span <?php echo "class='text-" . $row['color'] . "'"; ?>><i <?php echo "class='fas " . $row['icon'] . "'"; ?>></i></span>
-                                        <?php echo $row['name']; ?></td>
+                                        <span id="cell-name"> <?php echo $row['name']; ?> </span>
+                                    </td>
                                     <th style="text-align: right; "><?php echo $row['value']; ?></th>
-                                    <td style="text-align: left; "><?php echo $row['unit']; ?></td>
+                                    <td style="text-align: left; "> <span id="cell-unit"><?php echo $row['unit']; ?> </span></td>
                                     <td><?php echo $row['date_update']; ?></td>
                                     <td>
                                         <a <?php echo "data-id='" . $row['id'] . "' " . "data-name='" . $row['name'] . "' " . "data-unit='" . $row['unit'] . "' " ?> class="btn edit-data">
@@ -101,8 +102,28 @@
                             label: "Save",
                             className: 'btn-primary',
                             callback: function() {
-                                console.log('save clicked--ajax call to controller to be done');
+                                $.ajax({
+                                        method: "POST",
+                                        url: "<?php echo base_url() . "/RaunoTest/update" ?>",
+                                        data: {
+                                            id: id,
+                                            name: $("#rowName").val(),
+                                            unit: $("#rowUnit").val()
+                                        }
+                                    })
+                                    .done(function(res) {
+                                        var data = JSON.parse(res);
+                                        console.log("Data Saved: " + data.message);
+                                        //update the row view
+                                        $("#" + id + " " + "#cell-name").text(data.row.name);
+                                        $("#" + id + " " + "#cell-unit").text(data.row.unit);
+                                        //update editor
+                                        $("#" + id + " " + ".btn.edit-data").attr('data-name', data.row.name);
+                                        $("#" + id + " " + ".btn.edit-data").attr('data-unit', data.row.unit);
 
+                                    }).fail(function(e) {
+                                        alert("error" + e);
+                                    });
 
                             }
                         },

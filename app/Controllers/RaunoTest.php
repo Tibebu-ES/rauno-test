@@ -18,6 +18,34 @@ class RaunoTest extends BaseController
 
 
     /**
+     * get post data as input
+     * updates name and unit 
+     */
+    public function update()
+    {
+        $response = "";
+        $id = $this->request->getPost('id');
+        $name = $this->request->getPost('name');
+        $unit = $this->request->getPost('unit');
+
+        $row = $this->getSingleRow($id);
+        if ($row != null) {
+            $row['name'] = $name;
+            $row['unit'] = $unit;
+            $status = $this->updateSingleRow($id, $row);
+            if ($status) {
+                $response = array('error' => false, "message" => 'row updated!', 'row' => $row);
+            } else {
+                $response = array('error' => true, "message" => 'error on updating!');
+            }
+        } else {
+            $response = array('error' => true, "message" => 'row not found, error updating!');
+        }
+        echo json_encode($response);
+    }
+
+
+    /**
      * reads csv data
      * @return array - returns array of each row data, each row data are associative array where the keys are
      * field names 'id', 'name', 'unit', 'value', 'date_update', 'date_create', 'icon', 'color'
@@ -88,5 +116,23 @@ class RaunoTest extends BaseController
         }
 
         return $status;
+    }
+
+    /**
+     * get a single row with the given id
+     * @param $id - id of the row 
+     * @return  - row data
+     */
+    protected function getSingleRow($id)
+    {
+        $rowToReturn = null;
+        $dataRows = $this->readAllData();
+        foreach ($dataRows as $index => $row) {
+            if ($id == $row['id']) {
+                $rowToReturn = $row;
+            }
+        }
+
+        return $rowToReturn;
     }
 }
