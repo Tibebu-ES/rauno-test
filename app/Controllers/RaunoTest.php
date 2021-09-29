@@ -12,8 +12,10 @@ class RaunoTest extends BaseController
     public function index()
     {
         //
-
+        $data['rows'] = $this->readAllData();
+        return view('rauno_test_view', $data);
     }
+
 
     /**
      * reads csv data
